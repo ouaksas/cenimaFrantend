@@ -1,0 +1,83 @@
+<div class="row">
+  <div class="col-md-3">
+    <ul class="list-group" *ngIf="villes">
+      <li class="list-group-item {{selectedVille===v?'active':''}}" *ngFor="let v of villes._embedded.villes"
+          (click)="onGetCinemas(v)">{{v.name}}</li>
+    </ul>
+    <div *ngIf="auth" >
+      <form #f="ngForm" (ngSubmit)="onAjouterVile(f.value)">
+        <div class="form-group">
+          <label >Email address</label>
+          <input type="text" class="form-control" name="name" ngModel="">
+        </div>
+      </form>
+    <button type="submit" class="btn btn-info" (click)="onAjouterVile(f.value)">ajouter</button>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="panel panel-default" *ngIf="cinema">
+      <div class="panel-heading">
+        list cinema
+      </div>
+      <div class="panel-body">
+        <ul>
+          <li *ngFor="let c of cinema._embedded.cinemas" class="btn btn-default">
+            <a (click)="onGetSalles(c)">{{c.name}}</a>
+          </li>
+        </ul>
+
+        <div class="row" *ngIf="salles">
+          <div *ngFor="let s of salles._embedded.salles">
+            <div class="col-md-4">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  {{s.name}}
+                </div>
+
+                <div class="panel-body" *ngIf="s.projections">
+
+                  <ul class="list-group">
+                    <div class="row">
+                      <div class="col-md-3">
+                        <img width="100"
+                          src="{{cinemaService.host}}/imageFilm/{{s.projections._embedded.projectionFilms[0].film.id}}">
+                      </div>
+                      <div class="col-md-9">
+                        <li class="list-group-item {{selectedProjetcion===p? 'active':''}}" *ngFor="let p of s.projections._embedded.projectionFilms"
+                          (click)="showTickets(p)"
+                        >
+                          {{p.seance.heureDebut|date:'hh:mm'}} => {{p.prix|number:'0.00'}}DH
+                        </li>
+                      </div>
+                      <div *ngIf="tickets && selectedProjetcion.salle.id==s.id">
+                        <button [disabled]="t.reservee" (click)="onSelectTicket(t)" [class]="getTicketCless(t)" style="margin: 4px" *ngFor="let t of tickets._embedded.tickets">{{t.place.numero}}</button>
+
+                      </div>
+                      <div *ngIf="ListselectedTicket.length>0 && s.id==selectedProjetcion.salle.id">
+                      <form #f="ngForm" (ngSubmit)="onPaymen(f.value)">
+                        <div class="form-group">
+                          <label class="control-label">
+                            Nom client:
+                          </label>
+                          <input class="form-control" type="text" name="nomClent" ngModel>
+                        </div>
+                        <div class="form-group">
+                          <label class="control-label">
+                            Code paiment:
+                          </label>
+                          <input class="form-control" type="text" name="codePayment" ngModel>
+                        </div>
+                        <button type="submit" class="btn btn-success">Payer</button>
+                      </form>
+                      </div>
+                    </div>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
